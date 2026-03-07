@@ -14,6 +14,8 @@ namespace InstruaMe.Domain.Entities
         public string PasswordSalt { get; private set; }
         public EUserRole Role { get; set; } = EUserRole.Student;
 
+        public Student() { }
+
         public Student(RegisterStudentCommand command, string passwordHash, string passwordSalt)
         {
             Name = command.Name;
@@ -25,6 +27,14 @@ namespace InstruaMe.Domain.Entities
             PasswordSalt = passwordSalt;
 
             Register();
+        }
+
+        public void Update(UpdateStudentCommand command)
+        {
+            if (command.Name is not null) Name = command.Name;
+            if (command.Birthday.HasValue) Birthday = command.Birthday;
+            if (command.Photo is not null) Photo = command.Photo;
+            UpdatedAt = DateTimeOffset.UtcNow;
         }
     }
 }

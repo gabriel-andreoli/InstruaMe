@@ -10,7 +10,10 @@ namespace InstruaMe.Infrastructure.Mappings
         {
             builder.ToTable(nameof(Instructor));
 
-            builder.HasKey(x => x.Id);            
+            builder.HasKey(x => x.Id);
+
+            builder.Property(x => x.Photo).HasMaxLength(1000);
+            builder.Property(x => x.PricePerHour).HasColumnType("numeric(10,2)").HasDefaultValue(0m);
         }
     }
 }

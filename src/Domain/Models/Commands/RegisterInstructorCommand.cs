@@ -14,6 +14,9 @@
         public string Biography { get; set; }
         public string Description { get; set; }
 
+        public string? Photo { get; set; }
+        public decimal PricePerHour { get; set; }
+
         public string Password { get; set; }
     }
 }
