@@ -74,6 +74,7 @@ builder.Services.AddDbContext<InstruaMeDbContext>(options =>
 
 builder.Services.AddScoped<IPasswordHasherService, PasswordHasherService>();
 builder.Services.AddScoped<JwtTokenService>();
+builder.Services.AddScoped<PhotoService>();
 builder.Services.AddSingleton<InstruaMe.Services.WebSocketManager>();
 builder.Services.AddSingleton<InstruaMe.Services.ChatWebSocketHandler>();
 

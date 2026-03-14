@@ -138,8 +138,7 @@ namespace InstruaMe.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("Photo")
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasColumnType("text");
 
                     b.Property<decimal>("PricePerHour")
                         .ValueGeneratedOnAdd()

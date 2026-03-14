@@ -1,6 +1,7 @@
 using InstruaMe.Domain.Models.Commands;
 using InstruaMe.Domain.Models.Results;
 using InstruaMe.Infrastructure.ORM;
+using InstruaMe.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -63,8 +64,17 @@ namespace InstruaMe.Controllers
 
         [Authorize(Roles = "Student")]
         [HttpPut("me")]
-        public async Task<IActionResult> UpdateMe([FromBody] UpdateStudentCommand command, CancellationToken ct)
+        public async Task<IActionResult> UpdateMe(
+            [FromBody] UpdateStudentCommand command,
+            [FromServices] PhotoService photoService,
+            CancellationToken ct)
         {
+            if (command.Photo is not null)
+            {
+                try { command.Photo = photoService.ResizeToThumbnail(command.Photo); }
+                catch { return BadRequest(new { message = "Foto inválida. Envie uma imagem em base64." }); }
+            }
+
             var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
             var student = await _dbContext.Students

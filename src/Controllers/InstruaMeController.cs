@@ -25,8 +25,17 @@ namespace InstruaMe.Controllers
         }
 
         [HttpPost("instructor", Name = "RegisterInstructor")]
-        public async Task<IActionResult> RegisterInstructor(RegisterInstructorCommand command, CancellationToken ct) 
+        public async Task<IActionResult> RegisterInstructor(
+            RegisterInstructorCommand command,
+            [FromServices] PhotoService photoService,
+            CancellationToken ct)
         {
+            if (command.Photo is not null)
+            {
+                try { command.Photo = photoService.ResizeToThumbnail(command.Photo); }
+                catch { return BadRequest(new { message = "Foto inválida. Envie uma imagem em base64." }); }
+            }
+
             var passwordResult = _passwordHasher.Hash(command.Password);
 
             var instructor = new Instructor(command, passwordResult.hash, passwordResult.salt);
@@ -39,8 +48,17 @@ namespace InstruaMe.Controllers
         }
 
         [HttpPost("student", Name = "RegisterStudent")]
-        public async Task<IActionResult> RegisterStudent(RegisterStudentCommand command, CancellationToken ct) 
+        public async Task<IActionResult> RegisterStudent(
+            RegisterStudentCommand command,
+            [FromServices] PhotoService photoService,
+            CancellationToken ct)
         {
+            if (command.Photo is not null)
+            {
+                try { command.Photo = photoService.ResizeToThumbnail(command.Photo); }
+                catch { return BadRequest(new { message = "Foto inválida. Envie uma imagem em base64." }); }
+            }
+
             var passwordResult = _passwordHasher.Hash(command.Password);
 
             var student = new Student(command, passwordResult.hash, passwordResult.salt);

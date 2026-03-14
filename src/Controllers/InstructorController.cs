@@ -2,6 +2,7 @@ using InstruaMe.Domain.Entities;
 using InstruaMe.Domain.Models.Commands;
 using InstruaMe.Domain.Models.Results;
 using InstruaMe.Infrastructure.ORM;
+using InstruaMe.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -90,6 +91,7 @@ namespace InstruaMe.Controllers
                 PhoneNumber = instructor.PhoneNumber,
                 State = instructor.State,
                 City = instructor.City,
+
                 Birthday = instructor.Birthday,
                 CarModel = instructor.CarModel,
                 Biography = instructor.Biography,
@@ -115,8 +117,17 @@ namespace InstruaMe.Controllers
 
         [Authorize(Roles = "Instructor")]
         [HttpPut("me")]
-        public async Task<IActionResult> UpdateMe([FromBody] UpdateInstructorCommand command, CancellationToken ct)
+        public async Task<IActionResult> UpdateMe(
+            [FromBody] UpdateInstructorCommand command,
+            [FromServices] PhotoService photoService,
+            CancellationToken ct)
         {
+            if (command.Photo is not null)
+            {
+                try { command.Photo = photoService.ResizeToThumbnail(command.Photo); }
+                catch { return BadRequest(new { message = "Foto inválida. Envie uma imagem em base64." }); }
+            }
+
             var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
             var instructor = await _dbContext.Instructors
